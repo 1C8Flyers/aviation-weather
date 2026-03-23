@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  wx-backend:
+    build: ./backend
+    container_name: wx-backend
+    restart: unless-stopped
+
+  wx-frontend:
+    build: ./frontend
+    container_name: wx-frontend
+    restart: unless-stopped
+    depends_on:
+      - wx-backend
+    ports:
+      - "8085:80"
