@@ -117,8 +117,22 @@ function App() {
   useEffect(() => {
     const updateClocks = () => {
       const now = new Date();
-      setLocal(now.toLocaleString());
-      setZulu(now.toUTCString());
+      setLocal(
+        now.toLocaleTimeString([], {
+          hour: 'numeric',
+          minute: '2-digit',
+          second: '2-digit',
+        })
+      );
+      setZulu(
+        `${now.toLocaleTimeString('en-GB', {
+          timeZone: 'UTC',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false,
+        })}Z`
+      );
     };
     updateClocks();
     const clockInterval = setInterval(updateClocks, 1000);
@@ -275,50 +289,51 @@ function App() {
       <div className="app-shell">
         {/* Top Bar */}
         <div className={`topbar topbar--${flightCat}`}>
-          <div className="topbar__left">
-            <div className="topbar__brand">
-              <div className="topbar__logo-wrap">
-                <img src={logo} alt="Chapter Logo" className="topbar__logo" />
+          <div className="topbar__brand">
+            <div className="topbar__logo-wrap">
+              <img src={logo} alt="Chapter Logo" className="topbar__logo" />
+            </div>
+            <div className="topbar__copy">
+              <div className="topbar__eyebrow">Aviation Weather Dashboard</div>
+              <div className="topbar__title-row">
+                <div className="topbar__title">{data?.station || station}</div>
+                {data?.stationInfo && (
+                  <button
+                    className="station-info-btn"
+                    onClick={() => setShowStationInfo(true)}
+                    title="View station details"
+                  >
+                    Station Info
+                  </button>
+                )}
               </div>
-              <div className="topbar__copy">
-                <div className="topbar__eyebrow">Aviation Weather Dashboard</div>
-                <div className="topbar__title-row">
-                  <div className="topbar__title">{data?.station || station}</div>
-                  {data?.stationInfo && (
-                    <button
-                      className="station-info-btn"
-                      onClick={() => setShowStationInfo(true)}
-                      title="View station details"
-                    >
-                      Station Info
-                    </button>
-                  )}
-                </div>
-                <div className="topbar__meta">{stationName}</div>
-                <div className="topbar__subtitle">
-                  Updated {data ? formatDateTime(data.lastUpdated) : '—'}
-                </div>
+              <div className="topbar__subline">
+                <span>{stationName}</span>
+                <span className="topbar__separator" aria-hidden="true">•</span>
+                <span>Updated {data ? formatDateTime(data.lastUpdated) : '—'}</span>
               </div>
             </div>
           </div>
 
-          <div className="topbar__center">
-            <div className="topbar__clock">
-              <div className="topbar__clock-label">Clocks</div>
-              <div className="topbar__clock-row">Local {local}</div>
-              <div className="topbar__clock-row">Zulu {zulu}</div>
+          <div className="topbar__stats">
+            <div className="topbar__stat">
+              <div className="topbar__stat-label">Local</div>
+              <div className="topbar__stat-value">{local}</div>
             </div>
-          </div>
-
-          <div className="topbar__right">
-            <div className="topbar__fltcat-label">Flight Category</div>
-            <div className="topbar__fltcat-value">{flightCategoryLabel}</div>
+            <div className="topbar__stat">
+              <div className="topbar__stat-label">Zulu</div>
+              <div className="topbar__stat-value">{zulu}</div>
+            </div>
+            <div className="topbar__stat topbar__stat--category">
+              <div className="topbar__stat-label">Flight Category</div>
+              <div className="topbar__fltcat-value">{flightCategoryLabel}</div>
+            </div>
           </div>
         </div>
 
         {/* Station Selector Bar */}
         <div className="station-bar">
-          <div className="station-cluster station-cluster--search">
+          <div className="station-ribbon">
             <div className="station-form">
               <form onSubmit={handleStationSubmit}>
                 <label htmlFor="station-input" className="station-label">
@@ -340,7 +355,7 @@ function App() {
             </div>
 
             {recentStationButtons.length > 0 && (
-              <div className="station-quick">
+              <div className="station-cluster station-cluster--recent">
                 <span className="station-quick-label">Recent</span>
                 {recentStationButtons.map((s, idx) => (
                   <button
@@ -353,10 +368,8 @@ function App() {
                 ))}
               </div>
             )}
-          </div>
 
-          <div className="station-cluster station-cluster--services">
-            <div className="station-audio">
+            <div className="station-cluster station-cluster--service">
               <div className="station-service">
                 <div className="station-service__label">Audio</div>
                 {hasAudioFeed ? (
@@ -374,10 +387,11 @@ function App() {
                   <div className="audio-unavailable">No live feed</div>
                 )}
               </div>
+              {isLoading && <span className="station-loading">Refreshing data…</span>}
             </div>
 
             {forecastPeriods.length > 0 && (
-              <div className="station-forecast">
+              <div className="station-cluster station-cluster--forecast">
                 {forecastPeriods.map((p, i) => (
                   <div key={i} className="forecast-compact" title={p.shortForecast}>
                     <div className="forecast-compact__name">{p.name}</div>
@@ -442,10 +456,6 @@ function App() {
               </a>
             </div>
           )}
-
-          <div className="station-status">
-            {isLoading && <span className="station-loading">Refreshing data…</span>}
-          </div>
         </div>
 
         {/* Main Layout */}
