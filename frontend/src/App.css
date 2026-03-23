@@ -226,10 +226,24 @@ button {
 }
 
 .topbar__stat-value {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   font-size: 0.86rem;
   font-weight: 700;
   color: var(--muted-strong);
   line-height: 1.25;
+}
+
+.topbar__stat-date {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.topbar__stat-time {
   white-space: nowrap;
 }
 

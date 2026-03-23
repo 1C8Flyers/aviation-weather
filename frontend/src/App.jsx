@@ -89,8 +89,8 @@ function App() {
   const [data, setData] = useState(null);
   const [metar, setMetar] = useState(null);
   const [taf, setTaf] = useState(null);
-  const [local, setLocal] = useState('—');
-  const [zulu, setZulu] = useState('—');
+  const [local, setLocal] = useState({ date: '—', time: '—' });
+  const [zulu, setZulu] = useState({ date: '—', time: '—' });
   const [showGairmets, setShowGairmets] = useState(false);
   const [showCwas, setShowCwas] = useState(false);
   const [showStationInfo, setShowStationInfo] = useState(false);
@@ -117,22 +117,33 @@ function App() {
   useEffect(() => {
     const updateClocks = () => {
       const now = new Date();
-      setLocal(
-        now.toLocaleTimeString([], {
+      setLocal({
+        date: now.toLocaleDateString([], {
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric',
+        }),
+        time: now.toLocaleTimeString([], {
           hour: 'numeric',
           minute: '2-digit',
           second: '2-digit',
-        })
-      );
-      setZulu(
-        `${now.toLocaleTimeString('en-GB', {
+        }),
+      });
+      setZulu({
+        date: now.toLocaleDateString('en-US', {
+          timeZone: 'UTC',
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric',
+        }),
+        time: `${now.toLocaleTimeString('en-GB', {
           timeZone: 'UTC',
           hour: '2-digit',
           minute: '2-digit',
           second: '2-digit',
           hour12: false,
-        })}Z`
-      );
+        })}Z`,
+      });
     };
     updateClocks();
     const clockInterval = setInterval(updateClocks, 1000);
@@ -318,11 +329,17 @@ function App() {
           <div className="topbar__stats">
             <div className="topbar__stat">
               <div className="topbar__stat-label">Local</div>
-              <div className="topbar__stat-value">{local}</div>
+              <div className="topbar__stat-value">
+                <span className="topbar__stat-date">{local.date}</span>
+                <span className="topbar__stat-time">{local.time}</span>
+              </div>
             </div>
             <div className="topbar__stat">
               <div className="topbar__stat-label">Zulu</div>
-              <div className="topbar__stat-value">{zulu}</div>
+              <div className="topbar__stat-value">
+                <span className="topbar__stat-date">{zulu.date}</span>
+                <span className="topbar__stat-time">{zulu.time}</span>
+              </div>
             </div>
             <div className="topbar__stat topbar__stat--category">
               <div className="topbar__stat-label">Flight Category</div>
