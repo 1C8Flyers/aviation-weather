@@ -70,7 +70,6 @@ const LIVEATC_FEEDS = {
 
 // Custom airplane icon
 const createAirplaneIcon = (heading, isOnGround) => {
-  const color = isOnGround ? '#666666' : '#0066ff';
   const rotation = heading || 0;
   
   return L.divIcon({
@@ -205,11 +204,12 @@ function App() {
     };
   }, [savedStation, station]);
 
-  const advisoryColor = (t) => {
-    if (t === 'sigmet') return '#dc2626';
-    return '#a855f7';
-  };
   const flightCat = (metar?.flightCategory || 'VFR').toLowerCase();
+  const flightCategoryLabel = metar?.flightCategory || 'N/A';
+  const stationName = data?.stationInfo?.name || 'Flight Weather';
+  const forecastPeriods = data?.nwsForecast?.periods || [];
+  const recentStationButtons = recentStations.filter((s) => s !== station);
+  const hasAudioFeed = Boolean(LIVEATC_FEEDS[station]);
   
   // Helper component to recenter map when location changes
   function RecenterMap({ center }) {
@@ -272,295 +272,184 @@ function App() {
 
   return (
     <div className="app">
-      {/* Top Bar */}
-      <div className={`topbar topbar--${flightCat}`}>
-        <div className="topbar__left">
-          <img src={logo} alt="Chapter Logo" className="topbar__logo" />
-          <div className="topbar__title">
-            {data?.station || station} Flight Weather
-            {data?.stationInfo && (
-              <button 
-                className="station-info-btn"
-                onClick={() => setShowStationInfo(true)}
-                title="View station details"
-              >
-                ℹ️
-              </button>
+      <div className="app-shell">
+        {/* Top Bar */}
+        <div className={`topbar topbar--${flightCat}`}>
+          <div className="topbar__left">
+            <div className="topbar__brand">
+              <div className="topbar__logo-wrap">
+                <img src={logo} alt="Chapter Logo" className="topbar__logo" />
+              </div>
+              <div className="topbar__copy">
+                <div className="topbar__eyebrow">Aviation Weather Dashboard</div>
+                <div className="topbar__title-row">
+                  <div className="topbar__title">{data?.station || station}</div>
+                  {data?.stationInfo && (
+                    <button
+                      className="station-info-btn"
+                      onClick={() => setShowStationInfo(true)}
+                      title="View station details"
+                    >
+                      Station Info
+                    </button>
+                  )}
+                </div>
+                <div className="topbar__meta">{stationName}</div>
+                <div className="topbar__subtitle">
+                  Updated {data ? formatDateTime(data.lastUpdated) : '—'}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="topbar__center">
+            <div className="topbar__clock">
+              <div className="topbar__clock-label">Clocks</div>
+              <div className="topbar__clock-row">Local {local}</div>
+              <div className="topbar__clock-row">Zulu {zulu}</div>
+            </div>
+          </div>
+
+          <div className="topbar__right">
+            <div className="topbar__fltcat-label">Flight Category</div>
+            <div className="topbar__fltcat-value">{flightCategoryLabel}</div>
+          </div>
+        </div>
+
+        {/* Station Selector Bar */}
+        <div className="station-bar">
+          <div className="station-cluster station-cluster--search">
+            <div className="station-form">
+              <form onSubmit={handleStationSubmit}>
+                <label htmlFor="station-input" className="station-label">
+                  Airport
+                </label>
+                <input
+                  id="station-input"
+                  type="text"
+                  className="station-input"
+                  value={inputStation}
+                  onChange={(e) => setInputStation(e.target.value.toUpperCase())}
+                  maxLength={4}
+                  placeholder="KRFD"
+                />
+                <button type="submit" className="station-button">
+                  Load
+                </button>
+              </form>
+            </div>
+
+            {recentStationButtons.length > 0 && (
+              <div className="station-quick">
+                <span className="station-quick-label">Recent</span>
+                {recentStationButtons.map((s, idx) => (
+                  <button
+                    key={`${s}-${idx}`}
+                    className="station-button station-button--quick"
+                    onClick={() => handleQuickSelect(s)}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
             )}
           </div>
-          <div className="topbar__subtitle">
-            Last update: {data ? formatDateTime(data.lastUpdated) : '—'}
-          </div>
-        </div>
-        
-        <div className="topbar__center">
-          <div className="topbar__clock">
-            <div className="topbar__clock-row">Local: {local}</div>
-            <div className="topbar__clock-row">Z: {zulu}</div>
-          </div>
-        </div>
-        
-        <div className="topbar__right">
-          <div className="topbar__fltcat-label">Flight Category</div>
-          <div className="topbar__fltcat-value">
-            {metar?.flightCategory || 'N/A'}
-          </div>
-        </div>
-      </div>
 
-      
+          <div className="station-cluster station-cluster--services">
+            <div className="station-audio">
+              <div className="station-service">
+                <div className="station-service__label">Audio</div>
+                {hasAudioFeed ? (
+                  <a
+                    href={`https://www.liveatc.net/search/?icao=${station}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="audio-link"
+                    title={`Listen to ${station} on LiveATC`}
+                  >
+                    <span className="audio-link-icon">▶</span>
+                    <span className="audio-link-text">LiveATC</span>
+                  </a>
+                ) : (
+                  <div className="audio-unavailable">No live feed</div>
+                )}
+              </div>
+            </div>
 
-      {/* Station Selector Bar */}
-      <div className="station-bar">
-        <div className="station-form">
-          <form onSubmit={handleStationSubmit}>
-            <label htmlFor="station-input" className="station-label">
-              Airport (ICAO):
-            </label>
-            <input
-              id="station-input"
-              type="text"
-              className="station-input"
-              value={inputStation}
-              onChange={(e) => setInputStation(e.target.value.toUpperCase())}
-              maxLength={4}
-              placeholder="KRFD"
-            />
-            <button type="submit" className="station-button">
-              Go
-            </button>
-          </form>
-        </div>
-        
-        <div className="station-quick">
-          <span className="station-quick-label">Recent:</span>
-          {recentStations.map((s, idx) => (
-            <button
-              key={`${s}-${idx}`}
-              className="station-button station-button--quick"
-              onClick={() => handleQuickSelect(s)}
-            >
-              {s}
-            </button>
-          ))}
-        </div>
-        
-        {/* LiveATC Audio Player */}
-        <div className="station-audio">
-          <div className="audio-label">🎧 LiveATC:</div>
-          {LIVEATC_FEEDS[station] ? (
-            <a 
-              href={`https://www.liveatc.net/search/?icao=${station}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="audio-link"
-              title={`Listen to ${station} on LiveATC`}
-            >
-              <span className="audio-link-icon">▶️</span>
-              <span className="audio-link-text">Listen Live</span>
-            </a>
-          ) : (
-            <div className="audio-unavailable">
-              No feed available
+            {forecastPeriods.length > 0 && (
+              <div className="station-forecast">
+                {forecastPeriods.map((p, i) => (
+                  <div key={i} className="forecast-compact" title={p.shortForecast}>
+                    <div className="forecast-compact__name">{p.name}</div>
+                    <div className="forecast-compact__icon">{getWeatherIcon(p.shortForecast)}</div>
+                    <div className="forecast-compact__temp">{p.temp}°{p.tempUnit}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {data && (
+            <div className="station-alerts">
+              {data.pireps && data.pireps.length > 0 && (
+                <button
+                  className="alert-badge alert-badge--pirep"
+                  onClick={() => setShowPireps(true)}
+                  title={`${data.pireps.length} Pilot Report(s)`}
+                >
+                  PIREPs
+                  <span>{data.pireps.length}</span>
+                </button>
+              )}
+              {data.airmetsAndSigmets && data.airmetsAndSigmets.length > 0 && (
+                <button
+                  className="alert-badge alert-badge--sigmet"
+                  onClick={() => setShowSigmets(true)}
+                  title={`${data.airmetsAndSigmets.length} AIRMET/SIGMET(s)`}
+                >
+                  Advisories
+                  <span>{data.airmetsAndSigmets.length}</span>
+                </button>
+              )}
+              {data.gairmets && data.gairmets.length > 0 && (
+                <button
+                  className="alert-badge alert-badge--gairmet"
+                  onClick={() => setShowGairmets(true)}
+                  title={`${data.gairmets.length} Graphical AIRMET(s)`}
+                >
+                  G-AIRMETs
+                  <span>{data.gairmets.length}</span>
+                </button>
+              )}
+              {data.cwas && data.cwas.length > 0 && (
+                <button
+                  className="alert-badge alert-badge--cwa"
+                  onClick={() => setShowCwas(true)}
+                  title={`${data.cwas.length} Center Weather Advisories`}
+                >
+                  CWAs
+                  <span>{data.cwas.length}</span>
+                </button>
+              )}
+              <a
+                href="https://tfr.faa.gov/tfr2/list.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="alert-badge alert-badge--tfr"
+                title="View active TFRs (Temporary Flight Restrictions)"
+              >
+                TFRs
+              </a>
             </div>
           )}
-      
-              {/* G-AIRMETs Modal */}
-              {showGairmets && data?.gairmets && (
-                <div className="modal-overlay" onClick={() => setShowGairmets(false)}>
-                  <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                    <div className="modal-header">
-                      <h2>Graphical AIRMETs (G-AIRMETs)</h2>
-                      <button className="modal-close" onClick={() => setShowGairmets(false)}>×</button>
-                    </div>
-                    <div className="modal-body">
-                      {data.gairmets.map((gairmet, idx) => (
-                        <div key={idx} className="advisory-item">
-                          <div className="advisory-header">
-                            <span className={`advisory-type advisory-type--gairmet`}>
-                              {gairmet.product || 'G-AIRMET'}
-                            </span>
-                            <span className="advisory-hazard">{gairmet.hazard}</span>
-                          </div>
-                          <div className="advisory-details">
-                            <span>Forecast Hour: +{gairmet.forecastHour}h</span>
-                            {gairmet.validTime && (
-                              <span>Valid: {new Date(gairmet.validTime).toLocaleString()}</span>
-                            )}
-                          </div>
-                          {gairmet.dueToConditions && (
-                            <div className="advisory-raw">Conditions: {gairmet.dueToConditions}</div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-      
-              {/* CWAs Modal */}
-              {showCwas && data?.cwas && (
-                <div className="modal-overlay" onClick={() => setShowCwas(false)}>
-                  <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                    <div className="modal-header">
-                      <h2>Center Weather Advisories (CWAs)</h2>
-                      <button className="modal-close" onClick={() => setShowCwas(false)}>×</button>
-                    </div>
-                    <div className="modal-body">
-                      {data.cwas.map((cwa, idx) => (
-                        <div key={idx} className="advisory-item">
-                          <div className="advisory-header">
-                            <span className={`advisory-type advisory-type--cwa`}>
-                              {cwa.cwsu} - {cwa.name}
-                            </span>
-                            <span className="advisory-hazard">{cwa.hazard}</span>
-                          </div>
-                          <div className="advisory-details">
-                            <span>Series: {cwa.seriesId}</span>
-                            {cwa.altitudeLow && cwa.altitudeHigh && (
-                              <span>Alt: {cwa.altitudeLow}-{cwa.altitudeHigh} ft</span>
-                            )}
-                            {cwa.validFrom && cwa.validTo && (
-                              <span>
-                                Valid: {new Date(cwa.validFrom * 1000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}Z - 
-                                {new Date(cwa.validTo * 1000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}Z
-                              </span>
-                            )}
-                          </div>
-                          <div className="advisory-raw">{cwa.rawText}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-      
-              {/* Station Info Modal */}
-              {showStationInfo && data?.stationInfo && (
-                <div className="modal-overlay" onClick={() => setShowStationInfo(false)}>
-                  <div className="modal-content modal-content--narrow" onClick={(e) => e.stopPropagation()}>
-                    <div className="modal-header">
-                      <h2>Station Information</h2>
-                      <button className="modal-close" onClick={() => setShowStationInfo(false)}>×</button>
-                    </div>
-                    <div className="modal-body">
-                      <div className="station-info">
-                        <div className="station-info-row">
-                          <span className="station-info-label">ICAO ID:</span>
-                          <span className="station-info-value">{data.stationInfo.icaoId}</span>
-                        </div>
-                        {data.stationInfo.iataId && (
-                          <div className="station-info-row">
-                            <span className="station-info-label">IATA ID:</span>
-                            <span className="station-info-value">{data.stationInfo.iataId}</span>
-                          </div>
-                        )}
-                        <div className="station-info-row">
-                          <span className="station-info-label">Name:</span>
-                          <span className="station-info-value">{data.stationInfo.name}</span>
-                        </div>
-                        <div className="station-info-row">
-                          <span className="station-info-label">Location:</span>
-                          <span className="station-info-value">
-                            {data.stationInfo.state && `${data.stationInfo.state}, `}
-                            {data.stationInfo.country}
-                          </span>
-                        </div>
-                        <div className="station-info-row">
-                          <span className="station-info-label">Coordinates:</span>
-                          <span className="station-info-value">
-                            {data.stationInfo.lat.toFixed(4)}°, {data.stationInfo.lon.toFixed(4)}°
-                          </span>
-                        </div>
-                        <div className="station-info-row">
-                          <span className="station-info-label">Elevation:</span>
-                          <span className="station-info-value">{data.stationInfo.elevation} m ({Math.round(data.stationInfo.elevation * 3.28084)} ft)</span>
-                        </div>
-                        {data.stationInfo.siteType && data.stationInfo.siteType.length > 0 && (
-                          <div className="station-info-row">
-                            <span className="station-info-label">Services:</span>
-                            <span className="station-info-value">{data.stationInfo.siteType.join(', ')}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-        </div>
-        
-        {/* PIREPs, SIGMET, and TFR Badges */}
-        {data && (
-          <div className="station-alerts">
-            {data.pireps && data.pireps.length > 0 && (
-              <button 
-                className="alert-badge alert-badge--pirep"
-                onClick={() => setShowPireps(true)}
-                title={`${data.pireps.length} Pilot Report(s)`}
-              >
-                📋 PIREPs ({data.pireps.length})
-              </button>
-            )}
-            {data.airmetsAndSigmets && data.airmetsAndSigmets.length > 0 && (
-              <button 
-                className="alert-badge alert-badge--sigmet"
-                onClick={() => setShowSigmets(true)}
-                title={`${data.airmetsAndSigmets.length} AIRMET/SIGMET(s)`}
-              >
-                ⚠️ Advisories ({data.airmetsAndSigmets.length})
-                          {data.gairmets && data.gairmets.length > 0 && (
-                            <button 
-                              className="alert-badge alert-badge--gairmet"
-                              onClick={() => setShowGairmets(true)}
-                              title={`${data.gairmets.length} Graphical AIRMET(s)`}
-                            >
-                              🌤️ G-AIRMETs ({data.gairmets.length})
-                            </button>
-                          )}
-                          {data.cwas && data.cwas.length > 0 && (
-                            <button 
-                              className="alert-badge alert-badge--cwa"
-                              onClick={() => setShowCwas(true)}
-                              title={`${data.cwas.length} Center Weather Advisor(ies)`}
-                            >
-                              📡 CWAs ({data.cwas.length})
-                            </button>
-                          )}
-              </button>
-            )}
-            <a 
-              href="https://tfr.faa.gov/tfr2/list.html"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="alert-badge alert-badge--tfr"
-              title="View active TFRs (Temporary Flight Restrictions)"
-            >
-              🚫 TFRs
-            </a>
-          </div>
-        )}
-        
-        {/* Compact Forecast */}
-        {data?.nwsForecast && data.nwsForecast.periods && (
-          <div className="station-forecast">
-            {data.nwsForecast.periods.map((p, i) => (
-              <div key={i} className="forecast-compact" title={p.shortForecast}>
-                <div className="forecast-compact__name">{p.name}</div>
-                <div className="forecast-compact__icon">{getWeatherIcon(p.shortForecast)}</div>
-                <div className="forecast-compact__temp">{p.temp}°{p.tempUnit}</div>
-              </div>
-            ))}
-          </div>
-        )}
-        
-        <div className="station-status">
-          {isLoading && <span className="station-loading">Loading…</span>}
-          {/* Optional error rendering if you track one */}
-        </div>
-      </div>
 
-      {/* Main Layout */}
-      <div className="layout">
+          <div className="station-status">
+            {isLoading && <span className="station-loading">Refreshing data…</span>}
+          </div>
+        </div>
+
+        {/* Main Layout */}
+        <div className="layout">
         {/* Left Panel: METAR */}
         <div className="panel panel--metar">
           <h2 className="panel__title">Current METAR</h2>
@@ -822,8 +711,135 @@ function App() {
             </div>
           )}
         </div>
+        </div>
       </div>
       
+      {/* G-AIRMETs Modal */}
+      {showGairmets && data?.gairmets && (
+        <div className="modal-overlay" onClick={() => setShowGairmets(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Graphical AIRMETs (G-AIRMETs)</h2>
+              <button className="modal-close" onClick={() => setShowGairmets(false)}>×</button>
+            </div>
+            <div className="modal-body">
+              {data.gairmets.map((gairmet, idx) => (
+                <div key={idx} className="advisory-item">
+                  <div className="advisory-header">
+                    <span className="advisory-type advisory-type--gairmet">
+                      {gairmet.product || 'G-AIRMET'}
+                    </span>
+                    <span className="advisory-hazard">{gairmet.hazard}</span>
+                  </div>
+                  <div className="advisory-details">
+                    <span>Forecast Hour: +{gairmet.forecastHour}h</span>
+                    {gairmet.validTime && (
+                      <span>Valid: {new Date(gairmet.validTime).toLocaleString()}</span>
+                    )}
+                  </div>
+                  {gairmet.dueToConditions && (
+                    <div className="advisory-raw">Conditions: {gairmet.dueToConditions}</div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CWAs Modal */}
+      {showCwas && data?.cwas && (
+        <div className="modal-overlay" onClick={() => setShowCwas(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Center Weather Advisories (CWAs)</h2>
+              <button className="modal-close" onClick={() => setShowCwas(false)}>×</button>
+            </div>
+            <div className="modal-body">
+              {data.cwas.map((cwa, idx) => (
+                <div key={idx} className="advisory-item">
+                  <div className="advisory-header">
+                    <span className="advisory-type advisory-type--cwa">
+                      {cwa.cwsu} - {cwa.name}
+                    </span>
+                    <span className="advisory-hazard">{cwa.hazard}</span>
+                  </div>
+                  <div className="advisory-details">
+                    <span>Series: {cwa.seriesId}</span>
+                    {cwa.altitudeLow && cwa.altitudeHigh && (
+                      <span>Alt: {cwa.altitudeLow}-{cwa.altitudeHigh} ft</span>
+                    )}
+                    {cwa.validFrom && cwa.validTo && (
+                      <span>
+                        Valid: {new Date(cwa.validFrom * 1000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}Z -
+                        {' '}
+                        {new Date(cwa.validTo * 1000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}Z
+                      </span>
+                    )}
+                  </div>
+                  <div className="advisory-raw">{cwa.rawText}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Station Info Modal */}
+      {showStationInfo && data?.stationInfo && (
+        <div className="modal-overlay" onClick={() => setShowStationInfo(false)}>
+          <div className="modal-content modal-content--narrow" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Station Information</h2>
+              <button className="modal-close" onClick={() => setShowStationInfo(false)}>×</button>
+            </div>
+            <div className="modal-body">
+              <div className="station-info">
+                <div className="station-info-row">
+                  <span className="station-info-label">ICAO ID</span>
+                  <span className="station-info-value">{data.stationInfo.icaoId}</span>
+                </div>
+                {data.stationInfo.iataId && (
+                  <div className="station-info-row">
+                    <span className="station-info-label">IATA ID</span>
+                    <span className="station-info-value">{data.stationInfo.iataId}</span>
+                  </div>
+                )}
+                <div className="station-info-row">
+                  <span className="station-info-label">Name</span>
+                  <span className="station-info-value">{data.stationInfo.name}</span>
+                </div>
+                <div className="station-info-row">
+                  <span className="station-info-label">Location</span>
+                  <span className="station-info-value">
+                    {data.stationInfo.state && `${data.stationInfo.state}, `}
+                    {data.stationInfo.country}
+                  </span>
+                </div>
+                <div className="station-info-row">
+                  <span className="station-info-label">Coordinates</span>
+                  <span className="station-info-value">
+                    {data.stationInfo.lat.toFixed(4)}°, {data.stationInfo.lon.toFixed(4)}°
+                  </span>
+                </div>
+                <div className="station-info-row">
+                  <span className="station-info-label">Elevation</span>
+                  <span className="station-info-value">
+                    {data.stationInfo.elevation} m ({Math.round(data.stationInfo.elevation * 3.28084)} ft)
+                  </span>
+                </div>
+                {data.stationInfo.siteType && data.stationInfo.siteType.length > 0 && (
+                  <div className="station-info-row">
+                    <span className="station-info-label">Services</span>
+                    <span className="station-info-value">{data.stationInfo.siteType.join(', ')}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* PIREPs Modal */}
       {showPireps && data?.pireps && (
         <div className="modal-overlay" onClick={() => setShowPireps(false)}>
