@@ -119,7 +119,6 @@ function App() {
       const now = new Date();
       setLocal({
         date: now.toLocaleDateString([], {
-          weekday: 'short',
           month: 'short',
           day: 'numeric',
         }),
@@ -132,7 +131,6 @@ function App() {
       setZulu({
         date: now.toLocaleDateString('en-US', {
           timeZone: 'UTC',
-          weekday: 'short',
           month: 'short',
           day: 'numeric',
         }),
@@ -407,8 +405,62 @@ function App() {
               {isLoading && <span className="station-loading">Refreshing data…</span>}
             </div>
 
+            {data && (
+              <div className="station-cluster station-cluster--alerts station-alerts">
+                {data.pireps && data.pireps.length > 0 && (
+                  <button
+                    className="alert-badge alert-badge--pirep"
+                    onClick={() => setShowPireps(true)}
+                    title={`${data.pireps.length} Pilot Report(s)`}
+                  >
+                    PIREPs
+                    <span>{data.pireps.length}</span>
+                  </button>
+                )}
+                {data.airmetsAndSigmets && data.airmetsAndSigmets.length > 0 && (
+                  <button
+                    className="alert-badge alert-badge--sigmet"
+                    onClick={() => setShowSigmets(true)}
+                    title={`${data.airmetsAndSigmets.length} AIRMET/SIGMET(s)`}
+                  >
+                    Advisories
+                    <span>{data.airmetsAndSigmets.length}</span>
+                  </button>
+                )}
+                {data.gairmets && data.gairmets.length > 0 && (
+                  <button
+                    className="alert-badge alert-badge--gairmet"
+                    onClick={() => setShowGairmets(true)}
+                    title={`${data.gairmets.length} Graphical AIRMET(s)`}
+                  >
+                    G-AIRMETs
+                    <span>{data.gairmets.length}</span>
+                  </button>
+                )}
+                {data.cwas && data.cwas.length > 0 && (
+                  <button
+                    className="alert-badge alert-badge--cwa"
+                    onClick={() => setShowCwas(true)}
+                    title={`${data.cwas.length} Center Weather Advisories`}
+                  >
+                    CWAs
+                    <span>{data.cwas.length}</span>
+                  </button>
+                )}
+                <a
+                  href="https://tfr.faa.gov/tfr2/list.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="alert-badge alert-badge--tfr"
+                  title="View active TFRs (Temporary Flight Restrictions)"
+                >
+                  TFRs
+                </a>
+              </div>
+            )}
+
             {forecastPeriods.length > 0 && (
-              <div className="station-cluster station-cluster--forecast">
+              <div className="station-cluster station-cluster--forecast station-forecast">
                 {forecastPeriods.map((p, i) => (
                   <div key={i} className="forecast-compact" title={p.shortForecast}>
                     <div className="forecast-compact__name">{p.name}</div>
@@ -419,60 +471,6 @@ function App() {
               </div>
             )}
           </div>
-
-          {data && (
-            <div className="station-alerts">
-              {data.pireps && data.pireps.length > 0 && (
-                <button
-                  className="alert-badge alert-badge--pirep"
-                  onClick={() => setShowPireps(true)}
-                  title={`${data.pireps.length} Pilot Report(s)`}
-                >
-                  PIREPs
-                  <span>{data.pireps.length}</span>
-                </button>
-              )}
-              {data.airmetsAndSigmets && data.airmetsAndSigmets.length > 0 && (
-                <button
-                  className="alert-badge alert-badge--sigmet"
-                  onClick={() => setShowSigmets(true)}
-                  title={`${data.airmetsAndSigmets.length} AIRMET/SIGMET(s)`}
-                >
-                  Advisories
-                  <span>{data.airmetsAndSigmets.length}</span>
-                </button>
-              )}
-              {data.gairmets && data.gairmets.length > 0 && (
-                <button
-                  className="alert-badge alert-badge--gairmet"
-                  onClick={() => setShowGairmets(true)}
-                  title={`${data.gairmets.length} Graphical AIRMET(s)`}
-                >
-                  G-AIRMETs
-                  <span>{data.gairmets.length}</span>
-                </button>
-              )}
-              {data.cwas && data.cwas.length > 0 && (
-                <button
-                  className="alert-badge alert-badge--cwa"
-                  onClick={() => setShowCwas(true)}
-                  title={`${data.cwas.length} Center Weather Advisories`}
-                >
-                  CWAs
-                  <span>{data.cwas.length}</span>
-                </button>
-              )}
-              <a
-                href="https://tfr.faa.gov/tfr2/list.html"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="alert-badge alert-badge--tfr"
-                title="View active TFRs (Temporary Flight Restrictions)"
-              >
-                TFRs
-              </a>
-            </div>
-          )}
         </div>
 
         {/* Main Layout */}

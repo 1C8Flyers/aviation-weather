@@ -75,7 +75,7 @@ button {
   width: min(1680px, 100%);
   margin: 0 auto;
   display: grid;
-  gap: 18px;
+  gap: 14px;
 }
 
 .topbar {
@@ -83,10 +83,10 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 16px 18px;
+  gap: 14px;
+  padding: 14px 16px;
   border: 1px solid var(--line);
-  border-radius: 22px;
+  border-radius: 20px;
   background:
     radial-gradient(circle at top right, rgba(255, 255, 255, 0.06), transparent 30%),
     linear-gradient(145deg, rgba(14, 25, 42, 0.98), rgba(10, 18, 31, 0.9));
@@ -112,7 +112,7 @@ button {
 .topbar__brand {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   min-width: 0;
   flex: 1 1 auto;
 }
@@ -121,17 +121,17 @@ button {
   flex: none;
   display: grid;
   place-items: center;
-  width: 52px;
-  height: 52px;
-  border-radius: 16px;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .topbar__logo {
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   object-fit: contain;
 }
 
@@ -140,8 +140,8 @@ button {
 }
 
 .topbar__eyebrow {
-  margin-bottom: 3px;
-  font-size: 0.68rem;
+  margin-bottom: 2px;
+  font-size: 0.64rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted);
@@ -151,11 +151,11 @@ button {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 
 .topbar__title {
-  font-size: clamp(1.4rem, 2.6vw, 1.85rem);
+  font-size: clamp(1.28rem, 2.3vw, 1.68rem);
   line-height: 1;
   font-weight: 750;
   letter-spacing: -0.04em;
@@ -165,9 +165,9 @@ button {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 8px;
-  font-size: 0.86rem;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 0.8rem;
   color: var(--muted);
 }
 
@@ -176,12 +176,12 @@ button {
 }
 
 .station-info-btn {
-  padding: 7px 11px;
+  padding: 6px 10px;
   border: 1px solid var(--line-strong);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.05);
   color: var(--muted-strong);
-  font-size: 0.84rem;
+  font-size: 0.78rem;
   cursor: pointer;
   transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
 }
@@ -196,7 +196,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 6px;
   flex: 0 0 auto;
   flex-wrap: wrap;
   margin-left: auto;
@@ -206,20 +206,20 @@ button {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 4px;
-  min-width: 118px;
-  padding: 10px 12px;
+  gap: 3px;
+  min-width: 108px;
+  padding: 8px 10px;
   border: 1px solid rgba(148, 163, 184, 0.14);
-  border-radius: 16px;
+  border-radius: 14px;
   background: rgba(255, 255, 255, 0.035);
 }
 
 .topbar__stat--category {
-  min-width: 126px;
+  min-width: 118px;
 }
 
 .topbar__stat-label {
-  font-size: 0.64rem;
+  font-size: 0.6rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
@@ -236,14 +236,16 @@ button {
 }
 
 .topbar__stat-date {
-  font-size: 0.7rem;
+  font-size: 0.64rem;
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
 .topbar__stat-time {
+  font-size: 0.94rem;
+  font-weight: 800;
   white-space: nowrap;
 }
 
@@ -252,14 +254,14 @@ button {
   align-items: center;
   justify-content: center;
   align-self: flex-start;
-  min-width: 84px;
-  min-height: 34px;
-  padding: 0 12px;
+  min-width: 78px;
+  min-height: 32px;
+  padding: 0 10px;
   border-radius: 999px;
   border: 1px solid color-mix(in srgb, var(--flight-accent) 55%, transparent);
   background: color-mix(in srgb, var(--flight-accent) 16%, rgba(255, 255, 255, 0.04));
   color: white;
-  font-size: 0.84rem;
+  font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -268,10 +270,10 @@ button {
 
 .station-bar {
   display: grid;
-  gap: 12px;
-  padding: 14px 16px;
+  gap: 10px;
+  padding: 12px 14px;
   border: 1px solid var(--line);
-  border-radius: 20px;
+  border-radius: 18px;
   background: linear-gradient(145deg, rgba(13, 24, 41, 0.96), rgba(10, 18, 30, 0.88));
   box-shadow: var(--shadow);
 }
@@ -279,7 +281,7 @@ button {
 .station-ribbon {
   display: flex;
   align-items: center;
-  gap: 12px 16px;
+  gap: 10px 12px;
   flex-wrap: wrap;
   min-width: 0;
 }
@@ -288,35 +290,35 @@ button {
 .station-cluster {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
   min-width: 0;
 }
 
-.station-cluster--forecast {
-  margin-left: auto;
+.station-cluster--alerts {
+  flex: 0 1 auto;
 }
 
 .station-form form {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
 }
 
 .station-label,
 .station-service__label,
 .station-quick-label {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
 .station-input {
-  width: 102px;
-  padding: 11px 13px;
-  border-radius: 14px;
+  width: 96px;
+  padding: 10px 12px;
+  border-radius: 12px;
   border: 1px solid var(--line-strong);
   background: rgba(255, 255, 255, 0.04);
   color: var(--text);
@@ -333,8 +335,8 @@ button {
 
 .station-button,
 .panel__toggle {
-  padding: 11px 16px;
-  border-radius: 14px;
+  padding: 10px 14px;
+  border-radius: 12px;
   border: 1px solid transparent;
   background: linear-gradient(135deg, var(--accent-strong), #4aa3ff);
   color: white;
@@ -350,7 +352,7 @@ button {
 }
 
 .station-button--quick {
-  padding: 8px 12px;
+  padding: 7px 10px;
   border-color: var(--line-strong);
   background: rgba(255, 255, 255, 0.04);
   color: var(--muted-strong);
@@ -365,10 +367,10 @@ button {
 .station-service {
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-height: 42px;
-  padding: 6px 12px;
-  border-radius: 15px;
+  gap: 8px;
+  min-height: 38px;
+  padding: 5px 10px;
+  border-radius: 13px;
   border: 1px solid var(--line);
   background: var(--surface-strong);
 }
@@ -376,16 +378,16 @@ button {
 .station-forecast {
   display: flex;
   align-items: stretch;
-  gap: 8px;
+  gap: 6px;
   min-width: 0;
   flex-wrap: wrap;
   justify-content: flex-start;
 }
 
 .forecast-compact {
-  min-width: 78px;
-  padding: 7px 9px;
-  border-radius: 14px;
+  min-width: 70px;
+  padding: 6px 8px;
+  border-radius: 12px;
   border: 1px solid var(--line);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.03));
   display: flex;
@@ -396,19 +398,19 @@ button {
 }
 
 .forecast-compact__name {
-  font-size: 0.68rem;
+  font-size: 0.64rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
 .forecast-compact__icon {
-  font-size: 1.2rem;
+  font-size: 1.05rem;
   line-height: 1;
 }
 
 .forecast-compact__temp {
-  font-size: 0.84rem;
+  font-size: 0.78rem;
   font-weight: 800;
   color: var(--accent-warm);
 }
@@ -418,9 +420,9 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  min-height: 34px;
-  padding: 8px 13px;
+  gap: 6px;
+  min-height: 30px;
+  padding: 7px 12px;
   border-radius: 999px;
 }
 
@@ -451,23 +453,24 @@ button {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
-  gap: 8px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(148, 163, 184, 0.12);
+  gap: 6px;
+  padding-top: 0;
+  border-top: none;
+  align-items: center;
 }
 
 .alert-badge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  min-height: 34px;
-  padding: 7px 11px;
-  border-radius: 12px;
+  gap: 6px;
+  min-height: 30px;
+  padding: 6px 10px;
+  border-radius: 11px;
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.04);
   color: var(--text);
   text-decoration: none;
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
@@ -481,12 +484,12 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 18px;
-  height: 18px;
+  min-width: 17px;
+  height: 17px;
   padding: 0 6px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.16);
-  font-size: 0.68rem;
+  font-size: 0.64rem;
 }
 
 .alert-badge--pirep {
@@ -515,7 +518,7 @@ button {
 }
 
 .station-loading {
-  font-size: 0.8rem;
+  font-size: 0.74rem;
   color: var(--accent-warm);
   white-space: nowrap;
 }
